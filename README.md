@@ -1,1 +1,4 @@
-// 1. Create new .env files named .env.development and .env.test, and in each insert the relevant data names which can be found in the setup.sql (/db/seeds/setup.sql).
+# **nc-news README:**
+
+ ## 1. Creating new .env files: 
+ #### Create new .env.development file and insert *PGDATABASE=nc_news*. Create another new file named .env.test and insert *PGDATABASE=nc_news_test*.
