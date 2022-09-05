@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed');
 const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data/index');
+const { get } = require('../api/app');
 
 
 beforeEach(() => {
@@ -39,7 +40,7 @@ describe('GET /api/topics', () => {
     })
 });
 
-describe.only('GET /api/articles/:article_id', () => {
+describe('GET /api/articles/:article_id', () => {
     test('200: responds with an array of the specified article according to the id', () => {
         const article_id = 3;
         return request(app)
@@ -56,5 +57,14 @@ describe.only('GET /api/articles/:article_id', () => {
                 created_at: expect.any(String)
             });
         });
+    })
+    test('400: responds with Bad Request when an article_id that is invalid is inputted', () => {
+        const article_id = 'notAnId'
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
     })
 })
