@@ -38,3 +38,23 @@ describe('GET /api/topics', () => {
         })
     })
 });
+
+describe.only('GET /api/articles/:article_id', () => {
+    test('200: responds with an array of the specified article according to the id', () => {
+        const article_id = 3;
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.result).toMatchObject({
+                article_id: 3,
+                title: 'Eight pug gifs that remind me of mitch',
+                topic: 'mitch',
+                author: 'icellusedkars',
+                body: 'some gifs',
+                votes: 0,
+                created_at: expect.any(String)
+            });
+        });
+    })
+})
