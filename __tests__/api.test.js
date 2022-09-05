@@ -58,6 +58,16 @@ describe('GET /api/articles/:article_id', () => {
             });
         });
     })
+    test("404: article id does not exist", () => {
+        const article_id = 1000
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(404)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'article id does not exist'})
+        })
+    });
+
     test('400: responds with Bad Request when an article_id that is invalid is inputted', () => {
         const article_id = 'notAnId'
         return request(app)

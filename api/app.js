@@ -1,6 +1,6 @@
 const express = require('express');
 const { getTopics } = require('./controllers/topics.controllers')
-const { handleCustomErrors, handleInternalServerErrors, allMethodErrors } = require('./controllers/errors.controllers')
+const { handleCustomErrors, handleInternalServerErrors, allMethodErrors, handlePSQLErrors } = require('./controllers/errors.controllers')
 const { getArticleById } = require('./controllers/articles.controllers')
 const app = express();
 
@@ -13,9 +13,8 @@ app.get(`/api/articles/:article_id`, getArticleById);
 app.all('*', allMethodErrors);
 
 
-
 app.use(handleCustomErrors);
-
+app.use(handlePSQLErrors);
 app.use(handleInternalServerErrors);
 
 
