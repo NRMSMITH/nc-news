@@ -8,7 +8,10 @@ app.use(express.json());
 
 app.get('/api/topics', getTopics);
 
+
 app.all('*', allMethodErrors);
+
+
 
 app.use(handleCustomErrors);
 
