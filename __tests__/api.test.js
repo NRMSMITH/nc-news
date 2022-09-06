@@ -49,7 +49,8 @@ describe('GET /api/articles/:article_id', () => {
                 author: 'icellusedkars',
                 body: 'some gifs',
                 votes: 0,
-                created_at: expect.any(String)
+                created_at: expect.any(String),
+                comment_count: 2
             });
         });
     })
