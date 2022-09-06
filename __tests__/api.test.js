@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed');
 const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data/index');
+const { get } = require('../api/app');
 
 
 beforeEach(() => {
@@ -38,3 +39,42 @@ describe('GET /api/topics', () => {
         })
     })
 });
+
+describe('GET /api/articles/:article_id', () => {
+    test('200: responds with an array of the specified article according to the id', () => {
+        const article_id = 3;
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.result).toMatchObject({
+                article_id: 3,
+                title: 'Eight pug gifs that remind me of mitch',
+                topic: 'mitch',
+                author: 'icellusedkars',
+                body: 'some gifs',
+                votes: 0,
+                created_at: expect.any(String)
+            });
+        });
+    })
+    test("404: article id does not exist", () => {
+        const article_id = 1000
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(404)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'article id does not exist'})
+        })
+    });
+
+    test('400: responds with Bad Request when an article_id that is invalid is inputted', () => {
+        const article_id = 'notAnId'
+        return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+})
