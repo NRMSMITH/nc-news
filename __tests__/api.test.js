@@ -162,4 +162,49 @@ describe('PATCH api/articles/article_id', () => {
             });
         });
     })
+    test('400: no data in body - sends back message', () => {
+        const articleUpdate = {}
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+        expect(response.body).toEqual({msg: 'Bad Request'})
+        })
+    })
+    test('400: wrong data type in body - sends back error message', () => {
+        const articleUpdate = {
+            inc_votes: 'this is the wrong data type'
+        }
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'Bad Request'})
+        })
+    })
+    test('200: should ignore extra keys when given', () => {
+        const newVotes3 = 1
+        const articleUpdate4 = {
+            inc_votes: newVotes3,
+            title: 'This is the wrong title'
+        }
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate4)
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body.article).toBe('object')
+            expect(body.article).toEqual({
+                article_id: 5,
+                title: 'UNCOVERED: catspiracy to bring down democracy',
+                topic: 'cats',
+                author: 'rogersop',
+                body: 'Bastet walks amongst us, and the cats are taking arms!',
+                votes: 1,
+                created_at: expect.any(String)
+            })
+        })
+    })
 });
