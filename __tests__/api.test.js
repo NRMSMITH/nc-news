@@ -4,16 +4,12 @@ const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data/index');
 const { get } = require('../api/app');
-
-
 beforeEach(() => {
     return seed(testData)
 });
-
 afterAll(() => {
     return db.end()
 });
-
 describe('GET /api/topics', () => {
     test('200: responds with an array of topics', () => {
         return request(app)
@@ -39,7 +35,6 @@ describe('GET /api/topics', () => {
         })
     })
 });
-
 describe('GET /api/articles/:article_id', () => {
     test('200: responds with an array of the specified article according to the id', () => {
         const article_id = 3;
@@ -67,7 +62,6 @@ describe('GET /api/articles/:article_id', () => {
             expect(response.body).toEqual({msg: 'article id does not exist'})
         })
     });
-
     test('400: responds with Bad Request when an article_id that is invalid is inputted', () => {
         const article_id = 'notAnId'
         return request(app)
@@ -77,4 +71,30 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe('Bad Request')
         })
     })
+})
+describe('GET api/users', () => {
+    test('200: responds with an array of user objects', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.users)).toBe(true);
+            expect(body.users.length > 0).toBe(true)
+            body.users.forEach((user) => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                });
+            });
+        })
+    })
+    test('404: should respond with the msg: not found', () => {
+        return request(app)
+        .get('/api/userz')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        });
+    });
 })
