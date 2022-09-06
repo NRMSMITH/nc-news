@@ -98,3 +98,137 @@ describe('GET api/users', () => {
         });
     });
 })
+
+describe('PATCH api/articles/article_id', () => {
+    test('should update the vote count of an article and return the updated article', () => {
+        const newVote = 1
+        const articleUpdate = {
+            inc_votes: newVote
+        }
+        const newVotes = 15
+        const articleUpdate2 = {
+            inc_votes: newVotes
+        }
+        const negativeVotes = -10
+        const articleUpdate3 = {
+            inc_votes: negativeVotes
+        }
+        return request(app)
+        .patch(`/api/articles/3`)
+        .send(articleUpdate)
+        .expect(200)
+        .then(({ body }) => {
+            expect(typeof body.article).toBe('object')
+            expect(body.article).toEqual({
+                article_id: 3,
+                title: 'Eight pug gifs that remind me of mitch',
+                topic: 'mitch',
+                author: 'icellusedkars',
+                body: 'some gifs',
+                votes: 1,
+                created_at: expect.any(String)
+            })
+            return request(app)
+            .patch(`/api/articles/5`)
+            .send(articleUpdate2)
+            .expect(200)
+            .then(({body}) => {
+                expect(typeof body.article).toBe('object')
+                expect(body.article).toEqual({
+                    article_id: 5,
+                    title: 'UNCOVERED: catspiracy to bring down democracy',
+                    topic: 'cats',
+                    author: 'rogersop',
+                    body: 'Bastet walks amongst us, and the cats are taking arms!',
+                    votes: 15,
+                    created_at: expect.any(String)
+            })
+                return request(app)
+                .patch(`/api/articles/5`)
+                .send(articleUpdate3)
+                .expect(200)
+                .then(({body}) => {
+                    expect(typeof body.article).toBe('object')
+                    expect(body.article).toEqual({
+                        article_id: 5,
+                        title: 'UNCOVERED: catspiracy to bring down democracy',
+                        topic: 'cats',
+                        author: 'rogersop',
+                        body: 'Bastet walks amongst us, and the cats are taking arms!',
+                        votes: 5,
+                        created_at: expect.any(String)
+                    })
+                })
+            });
+        });
+    })
+    test('400: no data in body - sends back message', () => {
+        const articleUpdate = {}
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+        expect(response.body).toEqual({msg: 'Bad Request'})
+        })
+    })
+    test('400: wrong data type in body - sends back error message', () => {
+        const articleUpdate = {
+            inc_votes: 'this is the wrong data type'
+        }
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body).toEqual({msg:  'Bad Request'})
+        })
+    })
+    test('200: should ignore extra keys when given', () => {
+        const newVotes3 = 1
+        const articleUpdate4 = {
+            inc_votes: newVotes3,
+            title: 'This is the wrong title'
+        }
+        return request(app)
+        .patch(`/api/articles/5`)
+        .send(articleUpdate4)
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body.article).toBe('object')
+            expect(body.article).toEqual({
+                article_id: 5,
+                title: 'UNCOVERED: catspiracy to bring down democracy',
+                topic: 'cats',
+                author: 'rogersop',
+                body: 'Bastet walks amongst us, and the cats are taking arms!',
+                votes: 1,
+                created_at: expect.any(String)
+            })
+        })
+    })
+    test('404: article not found', () => {
+        const articleUpdate = {
+            inc_votes: 1
+        }
+        return request(app)
+        .patch(`/api/articles/500`)
+        .send(articleUpdate)
+        .expect(404)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'Not Found'})
+        });
+    })
+    test('400: wrong data type for id', () => {
+        const articleUpdate = {
+            inc_votes: 1
+        }
+        return request(app)
+        .patch(`/api/articles/D`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'Bad Request'})
+        })
+    })
+});
