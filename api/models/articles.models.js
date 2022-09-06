@@ -11,3 +11,12 @@ exports.selectArticleById = (article_id) => {
             }
         });
     };
+
+
+exports.updateArticleVoteById = (article_id, update) => {
+    const { inc_votes } = update
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id=$2 RETURNING*`, [inc_votes, article_id])
+    .then((result) => {
+        return result.rows[0]
+    })
+}

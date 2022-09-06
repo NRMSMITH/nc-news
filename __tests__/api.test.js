@@ -98,3 +98,68 @@ describe('GET api/users', () => {
         });
     });
 })
+
+describe('PATCH api/articles/article_id', () => {
+    test('should update the vote count of an article and return the updated article', () => {
+        const newVote = 1
+        const articleUpdate = {
+            inc_votes: newVote
+        }
+        const newVotes = 15
+        const articleUpdate2 = {
+            inc_votes: newVotes
+        }
+        const negativeVotes = -10
+        const articleUpdate3 = {
+            inc_votes: negativeVotes
+        }
+        return request(app)
+        .patch(`/api/articles/3`)
+        .send(articleUpdate)
+        .expect(200)
+        .then(({ body }) => {
+            expect(typeof body.article).toBe('object')
+            expect(body.article).toEqual({
+                article_id: 3,
+                title: 'Eight pug gifs that remind me of mitch',
+                topic: 'mitch',
+                author: 'icellusedkars',
+                body: 'some gifs',
+                votes: 1,
+                created_at: expect.any(String)
+            })
+            return request(app)
+            .patch(`/api/articles/5`)
+            .send(articleUpdate2)
+            .expect(200)
+            .then(({body}) => {
+                expect(typeof body.article).toBe('object')
+                expect(body.article).toEqual({
+                    article_id: 5,
+                    title: 'UNCOVERED: catspiracy to bring down democracy',
+                    topic: 'cats',
+                    author: 'rogersop',
+                    body: 'Bastet walks amongst us, and the cats are taking arms!',
+                    votes: 15,
+                    created_at: expect.any(String)
+            })
+                return request(app)
+                .patch(`/api/articles/5`)
+                .send(articleUpdate3)
+                .expect(200)
+                .then(({body}) => {
+                    expect(typeof body.article).toBe('object')
+                    expect(body.article).toEqual({
+                        article_id: 5,
+                        title: 'UNCOVERED: catspiracy to bring down democracy',
+                        topic: 'cats',
+                        author: 'rogersop',
+                        body: 'Bastet walks amongst us, and the cats are taking arms!',
+                        votes: 5,
+                        created_at: expect.any(String)
+                    })
+                })
+            });
+        });
+    })
+});
