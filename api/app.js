@@ -15,7 +15,6 @@ app.patch(`/api/articles/:article_id`, patchArticleVotesById);
 
 app.all('*', allMethodErrors);
 
-
 app.use(handleCustomErrors);
 app.use(handlePSQLErrors);
 app.use(handleInternalServerErrors);

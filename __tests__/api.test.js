@@ -181,7 +181,7 @@ describe('PATCH api/articles/article_id', () => {
         .send(articleUpdate)
         .expect(400)
         .then((response) => {
-            expect(response.body).toEqual({msg: 'Bad Request'})
+            expect(response.body).toEqual({msg:  'Bad Request'})
         })
     })
     test('200: should ignore extra keys when given', () => {
@@ -205,6 +205,30 @@ describe('PATCH api/articles/article_id', () => {
                 votes: 1,
                 created_at: expect.any(String)
             })
+        })
+    })
+    test('404: article not found', () => {
+        const articleUpdate = {
+            inc_votes: 1
+        }
+        return request(app)
+        .patch(`/api/articles/500`)
+        .send(articleUpdate)
+        .expect(404)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'Not Found'})
+        });
+    })
+    test('400: wrong data type for id', () => {
+        const articleUpdate = {
+            inc_votes: 1
+        }
+        return request(app)
+        .patch(`/api/articles/D`)
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body).toEqual({msg: 'Bad Request'})
         })
     })
 });
