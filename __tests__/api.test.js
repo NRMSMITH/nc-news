@@ -276,4 +276,12 @@ describe.only('GET /api/articles', () => {
             })
         })
     })
+    test('404: responds with a not found message when the topic does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=dingoes')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article topic does not exist')
+        })
+    })
 })
