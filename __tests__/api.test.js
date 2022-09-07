@@ -234,4 +234,25 @@ describe('PATCH api/articles/article_id', () => {
     })
 });
 
-
+describe.only('GET /api/articles', () => {
+    test('200: responds with an array of article objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length > 0).toBe(true);
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                });
+            })
+        })
+    })
+})
