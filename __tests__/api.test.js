@@ -255,4 +255,25 @@ describe.only('GET /api/articles', () => {
             })
         })
     })
+    test('200: should be able to use a query and respond with an array of the value asked', () => {
+        const topics = 'mitch'
+        return request(app)
+        .get(`/api/articles?topic=${topics}`)
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length > 0).toBe(true);
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: topics,
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                })
+            })
+        })
+    })
 })
