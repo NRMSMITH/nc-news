@@ -234,7 +234,7 @@ describe('PATCH api/articles/article_id', () => {
     })
 });
 
-describe('GET /api/articles', () => {
+describe.only('GET /api/articles', () => {
     test('200: responds with an array of article objects', () => {
         return request(app)
         .get('/api/articles')
