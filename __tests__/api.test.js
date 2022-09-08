@@ -233,3 +233,65 @@ describe('PATCH api/articles/article_id', () => {
         })
     })
 });
+
+describe('GET /api/articles', () => {
+    test('200: responds with an array of article objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length === 12).toBe(true);
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                });
+            })
+        })
+    })
+    test('200: should be able to use a query and respond with an array of the value asked', () => {
+        const topics = 'mitch'
+        return request(app)
+        .get(`/api/articles?topic=${topics}`)
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length === 11).toBe(true);
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: topics,
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+                })
+            })
+        })
+    })
+    test('200: responds with an empty array when the topic does exist but there are no articles about it', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length === 0).toBe(true);
+            expect(body.articles).toEqual([])
+        })
+    })
+    test('404: responds with a not found message when the topic does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=dingoes')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article topic does not exist')
+        })
+    })
+})
