@@ -241,7 +241,7 @@ describe.only('GET /api/articles', () => {
         .expect(200)
         .then(({body}) => {
             expect(Array.isArray(body.articles)).toBe(true);
-            expect(body.articles.length > 0).toBe(true);
+            expect(body.articles.length === 12).toBe(true);
             body.articles.forEach((article) => {
                 expect(article).toMatchObject({
                     author: expect.any(String),
@@ -274,6 +274,16 @@ describe.only('GET /api/articles', () => {
                     comment_count: expect.any(Number)
                 })
             })
+        })
+    })
+    test('200: responds with an empty array when the topic does exist but there are no articles about it', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles.length === 0).toBe(true);
+            expect(body.articles).toEqual([])
         })
     })
     test('404: responds with a not found message when the topic does not exist', () => {
