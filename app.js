@@ -1,8 +1,8 @@
 const express = require('express');
-const { getTopics } = require('./controllers/topics.controllers')
-const { handleCustomErrors, handleInternalServerErrors, allMethodErrors, handlePSQLErrors } = require('./controllers/errors.controllers')
-const { getArticleById, patchArticleVotesById, getArticles } = require('./controllers/articles.controllers')
-const { getUsers } = require('./controllers/users.controllers')
+const { getTopics } = require('./api/controllers/topics.controllers')
+const { handleCustomErrors, handleInternalServerErrors, allMethodErrors, handlePSQLErrors } = require('./api/controllers/errors.controllers')
+const { getArticleById, patchArticleVotesById, getArticles } = require('./api/controllers/articles.controllers')
+const { getUsers } = require('./api/controllers/users.controllers')
 const app = express();
 app.use(express.json());
 

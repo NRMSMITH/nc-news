@@ -1,5 +1,5 @@
 const { PORT = 9090 } = process.env;
-const app = require('./api/app')
+const app = require('./app')
 
 app.listen(PORT, (err) => {
   if (err) throw err;

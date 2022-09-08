@@ -1,9 +1,8 @@
-const app = require('../api/app');
+const app = require('../app');
 const seed = require('../db/seeds/seed');
 const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data/index');
-const { get } = require('../api/app');
 beforeEach(() => {
     return seed(testData)
 });

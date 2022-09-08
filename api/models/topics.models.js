@@ -1,5 +1,5 @@
 const db = require('../../db/connection');
-const { response } = require('../app');
+
 
 
 exports.selectTopics = () => { 
