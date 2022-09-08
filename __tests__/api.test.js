@@ -262,7 +262,7 @@ describe.only('GET /api/articles', () => {
         .expect(200)
         .then(({body}) => {
             expect(Array.isArray(body.articles)).toBe(true);
-            expect(body.articles.length > 0).toBe(true);
+            expect(body.articles.length === 11).toBe(true);
             body.articles.forEach((article) => {
                 expect(article).toMatchObject({
                     author: expect.any(String),
