@@ -342,3 +342,34 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
+
+describe.only('POST: /api/articles/:article_id/comments', () => {
+    test('200: should accept an object of username and body and return the posted comment', () => {
+        const sendComment = {username: 'lurker', body: 'This article is just ok I guess'}
+        return request(app)
+        .post(`/api/articles/1/comments`)
+        .send(sendComment)
+        .expect(201)
+        .then(({ body }) => {
+            expect(body.comment).toMatchObject({
+                article_id: 1,
+                author: 'lurker',
+                body: 'This article is just ok I guess',
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_id: expect.any(Number)
+            })
+        })
+    })
+    test('404: should respond with an error saying not found when the article id does not exist', () => {
+        const sendComment = {username: 'lurker', body: 'This article is just ok I guess'}
+        return request(app)
+        .post(`/api/articles/5000/comments`)
+        .send(sendComment)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Does not exist');
+        })
+    })
+    
+})
