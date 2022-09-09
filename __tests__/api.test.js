@@ -294,3 +294,51 @@ describe('GET /api/articles', () => {
         })
     })
 })
+describe('GET /api/articles/:article_id/comments', () => {
+    test('200: should respond with an array of comments for a particular article', () => {
+        const article_id = 1
+        return request(app)
+        .get(`/api/articles/${article_id}/comments`)
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.comments)).toBe(true);
+            expect(body.comments.length === 11).toBe(true);
+            body.comments.forEach((comment) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String)
+                })
+            })
+        })
+    })
+    test('200: should respond with an empty array when the article exists but no comments are posted', () => {
+        return request(app)
+        .get(`/api/articles/2/comments`)
+        .expect(200)
+        .then(({body}) => {
+            expect(Array.isArray(body.comments)).toBe(true);
+            expect(body.comments.length === 0).toBe(true);
+            expect(body.comments).toEqual([]);
+        })
+    })
+    test('404: should respond with an error saying not found when the article id does not exist', () => {
+        return request(app)
+        .get(`/api/articles/5000/comments`)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Article ID does not exist');
+        })
+    })
+    test('400: invalid article id', () => {
+        const articleid = 'niamh'
+        return request(app)
+        .get(`/api/articles/${articleid}/comments`)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+})
