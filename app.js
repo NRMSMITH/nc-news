@@ -3,7 +3,7 @@ const { getTopics } = require('./api/controllers/topics.controllers')
 const { handleCustomErrors, handleInternalServerErrors, allMethodErrors, handlePSQLErrors } = require('./api/controllers/errors.controllers')
 const { getArticleById, patchArticleVotesById, getArticles } = require('./api/controllers/articles.controllers')
 const { getUsers } = require('./api/controllers/users.controllers')
-const {getCommentsById, postCommentsById} = require('./api/controllers/comments.controllers')
+const {getCommentsById, postCommentsById, deleteComment} = require('./api/controllers/comments.controllers')
 const app = express();
 app.use(express.json());
 
@@ -17,6 +17,8 @@ app.get(`/api/users`, getUsers)
 app.patch(`/api/articles/:article_id`, patchArticleVotesById);
 
 app.post(`/api/articles/:article_id/comments`, postCommentsById)
+
+app.delete(`/api/comments/:comment_id`, deleteComment)
 
 app.all('*', allMethodErrors);
 

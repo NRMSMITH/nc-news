@@ -275,6 +275,22 @@ describe('GET /api/articles', () => {
             })
         })
     })
+    test('200: should be able query sort_by (defaults to date) on any valid column', () => {
+        return request(app)
+        .get(`/api/articles?sort_by=title`)
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy('title', {ascending: true})
+        });
+    });
+    test('400: responds with an error message when a column is asked to be sorted by that does not exist', () => {
+        return request(app)
+        .get(`/api/articles?sort_by=article_name`)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Column does not exist')
+        });
+    });
     test('200: responds with an empty array when the topic does exist but there are no articles about it', () => {
         return request(app)
         .get('/api/articles?topic=paper')
@@ -293,7 +309,34 @@ describe('GET /api/articles', () => {
             expect(body.msg).toBe('Article topic does not exist')
         })
     })
-})
+    test('200: user can change order of results', () => {
+        return request(app)
+        .get(`/api/articles?order=desc`)
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy("created_at", {descending: true})
+        });
+    });
+    test('400: responds with an error message when invalid order is entered', () => {
+        return request(app)
+        .get(`/api/articles?order=sjkldf`)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Invalid order request')
+        });
+    });
+    test('200: can respond with multiple queries in place',  () => {
+        return request(app)
+        .get(`/api/articles?topic=mitch&sort_by=author&order=desc`)
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy("author", {descending:true})
+            body.articles.forEach((article) => {
+              expect(article.topic).toBe('mitch');
+            });
+        })
+    })
+});
 describe('GET /api/articles/:article_id/comments', () => {
     test('200: should respond with an array of comments for a particular article', () => {
         const article_id = 1
@@ -343,7 +386,7 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 
-describe.only('POST: /api/articles/:article_id/comments', () => {
+describe('POST: /api/articles/:article_id/comments', () => {
     test('200: should accept an object of username and body and return the posted comment', () => {
         const sendComment = {username: 'lurker', body: 'This article is just ok I guess'}
         return request(app)
@@ -371,5 +414,64 @@ describe.only('POST: /api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('Does not exist');
         })
     })
-    
+    test("400: wrong data type for article id", () => {
+        const articleid = "niamh";
+        const sendComment = {username: 'lurker', body: 'This article is just ok I guess'}
+        return request(app)
+        .post(`/api/articles/${articleid}/comments`)
+        .send(sendComment)
+        .expect(400)
+        .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+    });
+});
+    test("404: username doesn't exist", () => {
+      const sendComment = {
+        username: "niamh",
+        body: "This article is just ok I guess",
+      };
+      return request(app)
+        .post(`/api/articles/1/comments`)
+        .send(sendComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Does not exist");
+        });
+    });
+    test("400: missing keys from object", () => {
+          const sendComment = {
+            username: "lurker",
+          };
+          return request(app)
+            .post(`/api/articles/1/comments`)
+            .send(sendComment)
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+})
+
+describe.only('DELETE: /api/comments/:comment_id', () => {
+    test('204: should return no content but delete a comment', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    })
+    test('404: returns error message for invalid comment_id', () => {
+        return request(app)
+        .delete('/api/comments/5000')
+        .expect(404)
+        .then(({ body}) => {
+            expect(body.msg).toBe('Comment Not Found')
+        })
+    })
+    test('400: returns error message for wrong data type for comment_id', () => {
+        return request(app)
+        .delete('/api/comments/niamh')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
 })
