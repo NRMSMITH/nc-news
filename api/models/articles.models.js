@@ -1,7 +1,7 @@
 const db = require('../../db/connection')
 
 exports.selectArticles = (topic, sort_by ='created_at', order = 'asc') => {
-    const validColumns = ["title", "topic", "author", "body", "created_at", "votes"];
+    const validColumns = ["title", "topic", "author", "body", "created_at", "votes", "comment_count"];
     const validOrder = ["asc", "desc"];
    return db.query(`SELECT * FROM topics;`).then((topics) => {
      const validTopics = topics.rows.map(currTopic => {
